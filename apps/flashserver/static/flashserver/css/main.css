@@ -1,0 +1,9 @@
+.decklist {
+  border-collapse: collapse;
+}
+.decklist td {
+  border: 1px black solid;
+}
+.decklist tr:nth-child(even){
+  background: #eeeeee;
+}

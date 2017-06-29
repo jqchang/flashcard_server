@@ -1,0 +1,99 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>All Decks</title>
+
+    {%load staticfiles%}
+    <link rel="stylesheet" type="text/css" href="{%static 'flashserver/css/main.css'%}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function() {
+      console.log("ready")
+      $("#side1").focus()
+      $("#side2").on("keypress",function(e) {
+          var key = e.keyCode;
+
+          // If the user has pressed enter
+          if (key == 13) {
+              $('#new_card').submit()
+              return false;
+          }
+          else {
+              return true;
+          }
+      });
+      $(".show_deck").click(function(e) {
+        if($(this).text()=="Show") {
+          $(this).text("Hide")
+          $(this).parent().siblings(".decklist").show()
+        }
+        else {
+          $(this).text("Show")
+          $(this).parent().siblings(".decklist").hide()
+        }
+      })
+      $(".delete_card").click(function(e) {
+        if($(this).text() == "Delete") {
+          $(this).text("Confirm");
+          $(this).css("color", "red");
+          $(this).parent().parent().css("background", "#FFEEEE");
+        }
+        else {
+          let cardnum = $(this).parent().parent().attr("cardnum")
+
+          $.ajax({
+            url: '/cards/'+cardnum,
+            type: 'DELETE',
+            success: function(result) {
+                // Do something with the result
+              console.log(result.success)
+              if(result.success == true) {
+                console.log("Success = hiding", $(this).parent())
+                $("#cardnum"+cardnum).hide()
+              }
+              else {
+                alert("Card not found!");
+              }
+            }
+          });
+        }
+      });
+    });
+    </script>
+  </head>
+  <body>
+    <form id='new_card' action='/cards' method='post'>
+      <table>
+        <tbody>
+          <tr>
+            <td>Deck:</td>
+            <td>{{deck.name}}</td>
+          </tr>
+          <tr>
+            <td>Side 1:</td>
+            <td><input id='side1' type='text' name='side1'></td>
+          </tr>
+          <tr>
+            <td>Side 2:</td>
+            <td><textarea id='side2' name='side2' cols=80 rows=10></textarea></td>
+          </tr>
+        </tbody>
+      </table>
+      <input type='hidden' name='deck' value={{deck.id}}>
+      <input type='submit'>
+    </form>
+    <fieldset>
+      <legend>{{deck.name}} <button class="show_deck">Hide</button></legend>
+      <table class="decklist">
+        {%for card in deck.cards.all%}
+        <tr id="cardnum{{card.id}}" cardnum="{{card.id}}">
+          <td>{{card.side1}}</td>
+          <td>{{card.side2}}</td>
+          <td><button class="delete_card" name="{{card.id}}">Delete</button></td>
+        </tr>
+        {%endfor%}
+      </table>
+    </fieldset>
+    <a href='/'>Home</a>
+  </body>
+</html>

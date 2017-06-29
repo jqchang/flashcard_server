@@ -20,6 +20,7 @@ class Deck(models.Model):
 
 class CardManager(models.Manager):
     def validate(self, postData):
+        print postData
         if "side1" in postData and "side2" in postData and "deck" in postData:
             try:
                 card = self.create(side1=postData["side1"], side2=postData["side2"], deck=Deck.objects.get(id=postData["deck"]))

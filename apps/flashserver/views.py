@@ -9,6 +9,14 @@ def index(req):
     all_cards = Card.objects.all()
     return render(req, 'flashserver/index.html', {"decks":all_decks, "cards":all_cards})
 
+def deckView(req, id):
+    try:
+        deck = Deck.objects.get(id=id)
+        cards = deck.cards.all()
+        return render(req, 'flashserver/viewdeck.html', {"deck":deck, "cards":cards})
+    except Deck.DoesNotExist:
+        return redirect(index)
+
 @csrf_exempt
 def deck_index(req):
     if req.method == 'GET':
@@ -17,9 +25,9 @@ def deck_index(req):
     elif req.method == 'POST':
         new_deck = Deck.objects.validate(req.POST)
         if new_deck["success"]:
-            return redirect(deck_target, id=new_deck["data"].id)
+            return redirect(index)
         else:
-            return JsonResponse({"debug_name":"deck_index", "debug_method":"post", "data":new_deck["errors"].values()}, safe=True)
+            return JsonResponse({"debug_name":"deck_index", "debug_method":"post", "data":new_deck["errors"]}, safe=True)
 
 @csrf_exempt
 def deck_target(req, id):
@@ -50,9 +58,9 @@ def card_index(req):
         new_card = Card.objects.validate(req.POST)
         if new_card["success"]:
             #return redirect(card_target, id=new_card["data"].id)
-            return redirect(index)
+            return redirect(deckView, id=req.POST["deck"])
         else:
-            return JsonResponse({"debug_name":"card_index", "debug_method":"post", "data":new_card["errors"].values()}, safe=True)
+            return JsonResponse({"debug_name":"card_index", "debug_method":"post", "data":new_card["errors"]}, safe=True)
 
 @csrf_exempt
 def card_target(req, id):
