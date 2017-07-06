@@ -28,6 +28,8 @@ def deck_index(req):
             return redirect(index)
         else:
             return JsonResponse({"debug_name":"deck_index", "debug_method":"post", "data":new_deck["errors"]}, safe=True)
+    else:
+        return JsonResponse({"debug_name":"deck_index", "debug_method":"unknown"}, safe=True)
 
 @csrf_exempt
 def deck_target(req, id):
