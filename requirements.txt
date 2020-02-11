@@ -7,7 +7,7 @@ cffi==1.9.1
 chardet==3.0.3
 click==6.7
 constantly==15.1.0
-Django==1.10.5
+Django==1.11.28
 django-filter==1.0.4
 djangorestframework==3.6.3
 enum-compat==0.0.2
